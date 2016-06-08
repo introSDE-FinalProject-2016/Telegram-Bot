@@ -251,14 +251,6 @@ Telegram::Bot::Client.run(token) do |bot|
       kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
       bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
 
-    when 'getQuote'
-      puts 'Inside getQuote...'
-      obj_person = Person.new()
-      text = obj_person.getQuote
-      puts text.to_s
-      kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
-      bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
-
       #p -comparisonInfo weight
     when /p\s-comparisonValue/
       if $id_Person == 0
