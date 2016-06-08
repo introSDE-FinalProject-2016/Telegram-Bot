@@ -1,12 +1,9 @@
 class Person
   def initialize
-    #person measure target post/get method
-    @ss_addr = "https://warm-hamlet-95336.herokuapp.com/sdelab/storage-service/person/"
-    @ss_measureDef_addr = "https://warm-hamlet-95336.herokuapp.com/sdelab/storage-service/measureDefinition"
-    @ss_adapter_addr = "https://warm-hamlet-95336.herokuapp.com/sdelab/storage-service/adapter"
-
+    #post/get method
     @bls_addr = "https://fierce-sea-36005.herokuapp.com/sdelab/businessLogic-service/person/"
-
+    @bls_measureDef_addr = "https://fierce-sea-36005.herokuapp.com/sdelab/businessLogic-service/measureDefinition";
+    
     #post method
     @pcs_addr = "https://desolate-thicket-56593.herokuapp.com/sdelab/processCentric-service/person/"
 
@@ -37,7 +34,7 @@ class Person
   public
 
   def createPerson(firstname,lastname,birthdate,email,gender)
-    addr = @ss_addr.to_s
+    addr = @bls_addr.to_s
 
     puts addr
     puts "Inside the method createPerson !!! "
@@ -57,7 +54,7 @@ class Person
   public
 
   def createGoal(personId,type,value,startDateGoal,endDateGoal,achieved)
-    addr = @ss_addr.to_s + personId.to_s + "/goal"
+    addr = @bls_addr.to_s + personId.to_s + "/goal"
     puts addr
     puts "Inside the method createGoal !!! "
 
@@ -87,7 +84,7 @@ class Person
 
   def createMeasure(personId,name,value)
     #calls createMeasure method --> SS
-    addr = @ss_addr.to_s + personId.to_s + "/measure"
+    addr = @bls_addr.to_s + personId.to_s + "/measure"
     puts addr
     puts "Inside the method createMeasure !!! "
 
@@ -158,7 +155,7 @@ class Person
   public
 
   def showMeasureDefinition
-    addr = @ss_measureDef_addr
+    addr = @bls_measureDef_addr
     puts addr
     puts "Inside the method view list of measure definition !!! "
     response = RestClient.get addr
@@ -166,7 +163,8 @@ class Person
 
     result = JSON.parse(response)
     puts result
-    measureName = result['measureName']
+    measureNames = result['measureNames']
+    measureName = measureNames['measureName']
     text = " "
     measureName.each do |el|
       text << "\n MeasureName: " + el
@@ -241,7 +239,7 @@ class Person
   public
 
   def deletePerson(personId)
-    addr = @ss_addr.to_s + personId.to_s
+    addr = @bls_addr.to_s + personId.to_s
     puts addr
     puts "Inside the method deletePerson !!! "
     response = RestClient.delete addr
@@ -252,22 +250,6 @@ class Person
     end
   end
 
-  # motivation quote method
-  public
-
-  def getQuote
-    addr = @ss_adapter_addr + "/quote"
-    puts addr
-    puts "Inside the method getQuote !!! "
-    response = RestClient.get addr
-    puts response
-
-    result = JSON.parse(response)
-    quote = result['result']
-    text = " "
-    text << "\n Quote: " + quote['quote'].to_s + "\n Author: " + quote['author'].to_s
-    return text
-  end
 
   # comparison information about measure and goal method
   public
