@@ -272,10 +272,10 @@ class Person
   # comparison information about measure and goal method
   public
 
-  def comparisonInfo(personId,measureName)
-    addr = @pcs_addr + personId.to_s + "/comparisonInfo/" + measureName.to_s
+  def comparisonValue(personId,measureName)
+    addr = @pcs_addr + personId.to_s + "/comparisonValue/" + measureName.to_s
     puts addr
-    puts "Inside the method getComparisonInfo !!! "
+    puts "Inside the method getComparisonValue !!! "
     response = RestClient.get addr
     puts response
 
