@@ -78,7 +78,7 @@ Telegram::Bot::Client.run(token) do |bot|
         answers_user = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [['welcome', '/help', '/stop'],
           ['personDetails', 'measureInfo',  'goalInfo'],
           ['currentMeasureList', 'p -checkMeasureList'],
-          ['p -verifyGoal', 'p -comparisonInfo'],
+          ['p -verifyGoal', 'p -comparisonValue'],
           ['p -cMeasure', 'p -cGoal', 'pDelete']], one_time_keyboard: false)
         bot.api.send_message(chat_id: message.chat.id, text: welcome_person, reply_markup: answers_user)
       end
@@ -260,12 +260,12 @@ Telegram::Bot::Client.run(token) do |bot|
       bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
 
       #p -comparisonInfo weight
-    when /p\s-comparisonInfo/
+    when /p\s-comparisonValue/
       if $id_Person == 0
         $id_Person = 1
       end
 
-      puts 'Inside comparison information method...'
+      puts 'Inside comparison value information method...'
 
       b=message.text.gsub(/\s+/m, ' ').strip.split(" ")
       puts "Size of b: " + b.size.to_s
@@ -275,7 +275,7 @@ Telegram::Bot::Client.run(token) do |bot|
         puts "MeasureName: " + measureName
       end
       obj_person = Person.new()
-      text = obj_person.comparisonInfo($id_Person,measureName)
+      text = obj_person.comparisonValue($id_Person,measureName)
       puts text.to_s
       kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
       bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
