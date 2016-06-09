@@ -28,13 +28,14 @@ Telegram::Bot::Client.run(token) do |bot|
     #**************************** START - STOP - HELP ********************************************
     when '/start'
       question = '
-       Welcome, to LIFECOACH SYSTEM!
+       Welcome, to LIFESTYLE COACH APP!
 
-       This application will help you to control your
-       everyday physical activity and hydration.
-       Measure the number of steps per day and
-       how many litres of water you drink and
-       see if it is enough for balanced healthy life.
+       The App allows the user to visualize, 
+       modify and add its personal information 
+       and to register the goals and lifestyle 
+       measurements. It will help you to control 
+       your everyday physical activity and 
+       hydration. 
 
        Send /searchPerson to begin the application.
        Tell the bot to /stop when
