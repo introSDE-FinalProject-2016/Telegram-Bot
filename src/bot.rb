@@ -30,14 +30,18 @@ Telegram::Bot::Client.run(token) do |bot|
       question = '
        Welcome, to LIFESTYLE COACH APP!
 
-       The App allows the user to visualize, 
-       modify and add its personal information 
-       and to register the goals and lifestyle 
-       measurements. It will help you to control 
-       your everyday physical activity and 
+       The App allows the user to 
+       visualize, modify and add its 
+       personal information and 
+       to register the goals and lifestyle 
+       measurements. It will help you 
+       to control your everyday 
+       physical activity and 
        hydration. 
 
-       Send /searchPerson to begin the application.
+       Send /searchPerson to begin 
+       the application. You can create a
+       new person.
        Tell the bot to /stop when
        you are done.
        Send /help if you want to see the menu.'
