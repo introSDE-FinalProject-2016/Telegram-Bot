@@ -11,7 +11,8 @@ class Person
 
   def help()
     help= '
-          You can control me by sending these commands:\n
+          You can control me by sending these commands:
+    
           /searchPerson - search person
           personDetails - view person details
           measureInfo - view list of all measures
@@ -19,11 +20,11 @@ class Person
           currentMeasureList - view list of current measure
           p -checkMeasureList - view list of given measure
           p -verifyGoal - check if goal achieved
-          p -comparisonInfo - comparison value of measure and goal
-          p -createMeasure <name> <value> - create new measure
-          p -createGoal <type> <value> <starDateGoal> 
+          p -comparisonValue - comparison value of current measure and goal
+          p -cMeasure <name> <value> - create new measure
+          p -cGoal <type> <value> <starDateGoal> 
                         <endDateGoal><achieved> - create new goal
-          p -createPerson <firstname> <lastname> <birthdate> 
+          p -cPerson <firstname> <lastname> <birthdate> 
                           <email> <gender> - create new person
           pDelete <idPerson> - delete a person'
     help
