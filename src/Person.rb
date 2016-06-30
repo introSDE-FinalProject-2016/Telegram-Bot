@@ -3,135 +3,111 @@ class Person
     #post/get method
     @bls_addr = "https://fierce-sea-36005.herokuapp.com/sdelab/businessLogic-service/person/"
     @bls_measureDef_addr = "https://fierce-sea-36005.herokuapp.com/sdelab/businessLogic-service/measureDefinition";
-    
+
     #post method
     @pcs_addr = "https://desolate-thicket-56593.herokuapp.com/sdelab/processCentric-service/person/"
-
   end
 
   def help()
     help= '
           You can control me by sending these commands:
-    
-          /searchPerson - search person
+
+          searchPerson - search a person by id
+          createPerson - create new person
+          peopleListDetails - view the list of people into DB
           personDetails - view person details
-          measureInfo - view list of all measures
+          measureInfo - view list of measures
           goalInfo - view list of goals
           currentMeasureList - view list of current measure
-          p -checkMeasureList - view list of given measure
-          p -verifyGoal - check if goal achieved
+          checkMeasureList - view list measure for a given measureName
+          createNewMeasure - create new measure and check if goal achieved
           p -comparisonValue - comparison value of current measure and goal
-          p -cMeasure <name> <value> - create new measure
-          p -cGoal <type> <value> <starDateGoal> 
-                        <endDateGoal><achieved> - create new goal
-          p -cPerson <firstname> <lastname> <birthdate> 
-                          <email> <gender> - create new person
-          pDelete <idPerson> - delete a person'
+          createNewMeasure - create new measure
+          createNewGoal - create new goal
+          deletePerson - delete a person'
     help
   end
 
+  
   #RestClient.post "http://example.com/resource", { 'x' => 1 }.to_json, :content_type => :json, :accept => :json
   # create person method
   public
 
   def createPerson(firstname,lastname,birthdate,email,gender)
     addr = @bls_addr.to_s
-
     puts addr
-    puts "Inside the method createPerson !!! "
+
+    puts 'BLS --> Inside the createNewPerson method...'
+
     sez = {'firstname' => firstname,'lastname' => lastname,'birthdate' => birthdate,'email' => email,'gender' => gender}
     puts sez
     response = RestClient.post addr.to_s, {'firstname' => firstname,'lastname' => lastname,'birthdate' => birthdate,'email' => email,'gender' => gender}.to_json,
     :content_type => :json, :accept => 'application/json'
-    
     puts response
+
     newPerson = response.to_s
     puts "Id new person: " + newPerson.to_s
-    text = "Id new person: " + newPerson.to_s
+    welcome_message = "Welcome, "
+    text = welcome_message + lastname + " " + firstname + "!.\n Your id is : " + newPerson.to_s
     return text
   end
 
+  
   # create goal method
   public
 
-  def createGoal(personId,type,value,startDateGoal,endDateGoal,achieved)
+  def createGoal(personId,type,value,condition)
     addr = @bls_addr.to_s + personId.to_s + "/goal"
     puts addr
-    puts "Inside the method createGoal !!! "
 
-    sez = {'type' => type,'value' => value,'startDateGoal' => startDateGoal,'endDateGoal' => endDateGoal,'achieved' => achieved}
+    puts 'BLS --> Inside the createNewGoal method...'
+
+    sez = {'type' => type,'value' => value,'condition' => condition}
     puts sez
-    response = RestClient.post addr.to_s, {'type' => type,'value' => value,'startDateGoal' => startDateGoal,'endDateGoal' => endDateGoal,'achieved' => achieved}.to_json,
+    response = RestClient.post addr.to_s, {'type' => type,'value' => value,'condition' => condition}.to_json,
     :content_type => :json, :accept => 'application/json'
-
     puts response
+
     newGid = response.to_s
     puts "Id new goal: " + newGid.to_s
 
     #calls checkNewGoal method --> PCS
     addr = @pcs_addr.to_s + personId.to_s + "/checkNewGoal/" + newGid.to_s
     puts addr
-    puts "Inside the method checkNewGoal !!! "
+    puts 'PCS --> Inside the checkNewGoal method ...'
 
     response = RestClient.get addr
     result = JSON.parse(response)
-    newGoal = result["newGoal"]
-    text = "Goal: " + newGoal['name'].to_s + "\n Type: " + newGoal['type'].to_s + "\n Value: " + newGoal['value'].to_s + "\n StartDateGoal: " + newGoal['startDateGoal'].to_s + "\n EndDateGoal: " + newGoal['endDateGoal'].to_s + "\n Achieved: " + newGoal['achieved'].to_s
+    text = "Goal: " + result['type'].to_s + "\n ID: " + result['gid'].to_s + "\n Value: " + result['value'].to_s + "\n StartDateGoal: " + result['startDateGoal'].to_s + "\n EndDateGoal: " + result['endDateGoal'].to_s + "\n Achieved: " + result['achieved'].to_s + "\n Condition: " + result['condition'].to_s
     return text
   end
 
-  # create measure method
-  public
-
-  def createMeasure(personId,name,value)
-    #calls createMeasure method --> SS
-    addr = @bls_addr.to_s + personId.to_s + "/measure"
-    puts addr
-    puts "Inside the method createMeasure !!! "
-
-    sez = {'name' => name,'value' => value}
-    puts sez
-    response = RestClient.post addr.to_s, {'name' => name,'value' => value}.to_json,
-    :content_type => :json, :accept => 'application/json'
-
-    puts response
-    newMid = response.to_s
-    puts "Id new measure: " + newMid.to_s
-
-    #calls checkNewMeasure method --> PCS
-    addr = @pcs_addr.to_s + personId.to_s + "/checkNewMeasure/" + newMid.to_s
-    puts addr
-    puts "Inside the method checkNewMeasure !!! "
-
-    response = RestClient.get addr
-    result = JSON.parse(response)
-    newMeasure = result["newMeasure"]
-    text = "Measure: " + newMeasure['name'].to_s + "\n Type: " + newMeasure['type'].to_s + "\n Value: " + newMeasure['value'].to_s + "\n Created: " + newMeasure['created'].to_s
-    return text
-  end
-
+  
   # view person Details method
   public
 
   def viewPersonDetails(personId)
     addr = @bls_addr.to_s + personId.to_s
     puts addr
-    puts "Inside the method viewPersonDetails !!! "
+
+    puts 'BLS --> Inside the viewPersonDetails method...'
     response = RestClient.get addr
     puts response
 
-    person = JSON.parse(response)
-    text = "Firstname: "+person['firstname']+"\n Lastname: "+person['lastname']+ "\n Birthdate: "+ person['birthdate']+"\n Email: "+person['email']+"\n Gender: "+person['gender']
+    result = JSON.parse(response)
+    text = "\n Firstname: " + result['firstname'].to_s + "\n Lastname: " + result['lastname'].to_s + "\n Birthdate: " + result['birthdate'].to_s + "\n Email: " + result['email'].to_s + "\n Gender: " + result['gender'].to_s
     return text
   end
 
+  
   # view list of goal method
   public
 
   def showListGoal(personId)
-    addr = @bls_addr.to_s + personId.to_s+"/goal"
+    addr = @bls_addr.to_s + personId.to_s + "/goal"
     puts addr
-    puts "Inside the method showListGoal !!! "
+
+    puts 'BLS --> Inside the showListGoal method...'
 
     response = RestClient.get addr
     if response.code == 200
@@ -139,9 +115,9 @@ class Person
       result = JSON.parse(response)
       x=result['goal']
       if !x.empty?
-        text = " "
+        text = "List of goals: \n"
         x.each do |el|
-          text << "\n Goal: " + el['type'].to_s + "\n Value: " + el['value'].to_s + "\n Start Date: " + el['startDateGoal'].to_s + "\n End Date: " + el['endDateGoal'].to_s + "\n Achieved: " + el['achieved'].to_s + " \n "
+          text << "\n Id: " + el['gid'].to_s + "\n Type: " + el['type'].to_s + "\n Value: " + el['value'].to_s + "\n Start Date: " + el['startDateGoal'].to_s + "\n End Date: " + el['endDateGoal'].to_s + "\n Achieved: " + el['achieved'].to_s + "\n Condition: " + el['condition'].to_s + " \n "
         end
       else
         text = "There are not goals"
@@ -152,13 +128,15 @@ class Person
     return text
   end
 
+  
   # view list of measure types method
   public
 
   def showMeasureDefinition
     addr = @bls_measureDef_addr
     puts addr
-    puts "Inside the method view list of measure definition !!! "
+
+    puts 'BLS --> Inside the viewListMeasureDefinition method...'
     response = RestClient.get addr
     puts response
 
@@ -173,122 +151,181 @@ class Person
     return text
   end
 
+  
   # view list of current measure method
   public
 
   def showListCurrentHealth(personId)
-    addr = @bls_addr.to_s + personId.to_s+"/current-health"
+    addr = @bls_addr.to_s + personId.to_s + "/current-health"
     puts addr
-    puts "Inside the method view list of current measure !!! "
+
+    puts 'BLS --> Inside the showListCurrentMeasure method...'
+
     response = RestClient.get addr
     puts response
 
-    result = JSON.parse(response)
-    puts result
-    currentHealth = result['currentHealth-profile']
-    measure = currentHealth['measure']
-    text = " "
-    measure.each do |el|
-      text << "\n Measure: "+el['name'].to_s + "\n Value: "+el['value'].to_s + "\n Created: "+el['created'].to_s + "\n"
+    if response.code == 200
+      puts response
+      result = JSON.parse(response)
+      x=result['measure']
+      if !x.empty?
+        text = "List of current measures:\n"
+        x.each do |el|
+          text << "\n Id: "+el['mid'].to_s + "\n Name: "+el['name'].to_s + "\n Value: "+el['value'].to_s + "\n Created: "+el['created'].to_s + "\n"
+        end
+      else
+        text = "There are not measures"
+      end
+    else
+      text = "Error"
     end
     return text
   end
 
+  
   # view list of history measure method
   public
 
   def showListHistoryHealth(personId)
     addr = @bls_addr.to_s + personId.to_s+"/history-health"
     puts addr
-    puts "Inside the method view list of history measure !!! "
+
+    puts 'BLS --> Inside the showListHistoryMeasure method...'
+
     response = RestClient.get addr
     puts response
 
-    result = JSON.parse(response)
-    puts result
-    historyHealth = result['historyHealth-profile']
-    measure = historyHealth['measure']
-    text = " "
-    measure.each do |el|
-      text << "\n Measure: "+el['name'].to_s + "\n Value: "+el['value'].to_s + "\n Created: "+el['created'].to_s + "\n"
+    if response.code == 200
+      puts response
+      result = JSON.parse(response)
+      x=result['measure']
+      if !x.empty?
+        text = "List of history measures:\n"
+        x.each do |el|
+          text << "\n Id: "+el['mid'].to_s + "\n Name: "+el['name'].to_s + "\n Value: "+el['value'].to_s + "\n Created: "+el['created'].to_s + "\n"
+        end
+      else
+        text = "There are not measures"
+      end
+    else
+      text = "Error"
     end
     return text
   end
 
+  
   # view list of a given measure
   public
 
-  def checkMeasureList(personId,measureName)
-    addr = @bls_addr.to_s + personId.to_s + "/measure/"+ measureName.to_s
+  def checkMeasureByMeasureName(personId,measureName)
+    addr = @bls_addr.to_s + personId.to_s + "/measure/" + measureName.to_s
     puts addr
-    puts "Inside the method check list of a given measure !!! "
+
+    puts 'BLS --> Inside the checkMeasureByMeasureName method...'
+
     response = RestClient.get addr
     puts response
 
     result = JSON.parse(response)
     puts result
-    measureProfile = result['measure-profile']
-    measure = measureProfile['measure']
+    measure = result['measure']
     text = "Measure: " + measureName.to_s + "\n"
     measure.each do |el|
-      text << "\n Mid: " + el['mid'].to_s + "\n Value: " + el['value'].to_s + "\n Created: " + el['created'].to_s + "\n"
+      text << "\n Id: " + el['mid'].to_s + "\n Value: " + el['value'].to_s + "\n Created: " + el['created'].to_s + "\n"
     end
     return text
   end
 
+  
   #Delete person method
   public
 
   def deletePerson(personId)
     addr = @bls_addr.to_s + personId.to_s
     puts addr
-    puts "Inside the method deletePerson !!! "
+
+    puts 'BLS --> Inside the deletePerson method...'
+
     response = RestClient.delete addr
-    if response.code === 204
-      text = "Person with " + personId.to_s + " deleted."
+    if response.code == 200
+      text = "\n Person with " + personId.to_s + " deleted."
     else
-      text = "Person with " + personId.to_s + " does not exist."  
+      text = "\n Person with " + personId.to_s + " does not exist."
     end
   end
 
-
-  # comparison information about measure and goal method
+  
+  # count achieved goals for a specified person with idPerson
   public
 
-  def comparisonValue(personId,measureName)
-    addr = @pcs_addr + personId.to_s + "/comparisonValue/" + measureName.to_s
+  def countGoalsAchieved(personId)
+    addr = @pcs_addr + personId.to_s + "/goals"
     puts addr
-    puts "Inside the method getComparisonValue !!! "
+
+    puts 'PCS --> Inside the countGoalsAchieved method'
+
     response = RestClient.get addr
     puts response
-
     result = JSON.parse(response)
-    info = result['info']
-    measure = info['measure']
-    goal = info['goal']
-    comparison = info['comparison']
-    text = " "
-    text << "\n Measure: " + measure['name'].to_s + "\n Type: " + measure['type'].to_s + "\n Value: " + measure['value'].to_s + "\n" +
-    "\n Goal: " + goal['name'].to_s + "\n Value: " + goal['value'].to_s + "\n Achieved: " + goal['achieved'].to_s + "\n" +
-    "\n Result: " + comparison['result'].to_s + "\n Quote: " + comparison['quote'].to_s
+    puts "Result json" + result.to_s
+    text = result['url'].to_s
     return text
   end
 
-  # verify if goal achieved
+  
+  # insert new measure and check if goal achieved
   public
 
-  def verifyGoal(personId,measureName)
-    addr = @pcs_addr + personId.to_s + "/verifyGoal/" + measureName
+  def createMeasure(personId,name,value)
+    addr = @pcs_addr.to_s + personId.to_s + "/measure"
     puts addr
-    puts "Inside the method verifyGoal !!! "
+    puts 'PCS --> Inside the inserNewMeasure method...'
+
+    response = RestClient.get addr, :params => {:name => name, :value => value}
+    result = JSON.parse(response)
+
+    puts "Result json" + result.to_s
+
+    x = result['currentHealth']
+    y = x['measure']
+    measure = "List of current measure:\n"  
+    text = result['phrase'].to_s + "\n" + 
+           "\n" + measure
+    
+    y.each do |el|
+      text << "\n Id: "+el['mid'].to_s + "\n Name: "+el['name'].to_s + "\n Value: "+el['value'].to_s + "\n Created: "+el['created'].to_s + "\n"
+    end
+
+    return text
+  end
+
+  
+  # view peopleList Details method
+  public
+
+  def viewPeopleListDetails
+    addr = "https://fierce-sea-36005.herokuapp.com/sdelab/businessLogic-service/person"
+    puts addr
+
+    puts 'BLS --> Inside the viewPeopleListDetails method...'
     response = RestClient.get addr
     puts response
 
-    result = JSON.parse(response)
-    check = result['verifyGoal']
-    goal = check['goal']
-    text = " "
-    text << "\n Goal: " + goal['name'].to_s + "\n Type: " + goal['type'].to_s + "\n Value: " + goal['value'].to_s + "\n Achieved: " + goal['achieved'].to_s + "\n Motivation: " + goal['motivation'].to_s
+    if response.code == 200
+      puts response
+      result = JSON.parse(response)
+      x=result['person']
+      if !x.empty?
+        text = " "
+        x.each do |el|
+          text << "\n Id: " + el['pid'].to_s + "\n Firstname: " + el['firstname'].to_s + "\n Lastname: " + el['lastname'].to_s + "\n Birthdate: " + el['birthdate'].to_s + "\n Email: " + el['email'].to_s + "\n Gender: " + el['gender'].to_s + "\n"
+        end
+      else
+        text = "There are not measures"
+      end
+    else
+      text = "Error"
+    end
     return text
   end
 
