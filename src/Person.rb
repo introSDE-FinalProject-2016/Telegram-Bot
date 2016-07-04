@@ -269,7 +269,9 @@ class Person
     result = JSON.parse(response)
     puts "Result json" + result.to_s
     text = result['url'].to_s
-    return text
+    new_str = text.slice(0..(text.index('?')-1))
+    puts "New URL: " + new_str    
+    return new_str
   end
 
   
