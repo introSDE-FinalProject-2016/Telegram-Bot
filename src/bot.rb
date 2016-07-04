@@ -1,9 +1,17 @@
 require 'telegram/bot'
 require 'rest-client'
 require 'pp'
+require 'open-uri'
 require 'faraday'
+require 'tempfile'
+require 'net/http'
+require 'net/http/post/multipart'
+require 'openssl'
+require 'rubygems'
+require 'faraday_middleware'
 
 require_relative 'Person'
+
 
 token = '217842946:AAFyBzppkNaN70JXGlQzXVTBB9XVwKnfCc4'
 
@@ -275,7 +283,7 @@ Telegram::Bot::Client.run(token) do |bot|
         kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
         bot.api.send_message(chat_id: message.chat.id, text: ask_id, reply_markup: kb)
       end
-    
+
       #p -cMeasureByName weight
     when /p\s-fMeasureByName/
       puts 'IdPerson: ' + $id_Person.to_s
@@ -285,17 +293,17 @@ Telegram::Bot::Client.run(token) do |bot|
 
       b = message.text.gsub(/\s+/m, ' ').strip.split(" ")
       puts "Size of b: " + b.size.to_s
-      
+
       if b.size === 3
         measureName = b[2]
         puts "MeasureName: " + measureName
-      
+
         obj_person = Person.new()
         text = obj_person.checkMeasureByMeasureName($id_Person,measureName)
         puts text.to_s
         kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
         bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
-      end  
+      end
 
     when 'deletePerson'
       ask_id = "Insert an id to delete: pDelete <id>"
@@ -312,23 +320,43 @@ Telegram::Bot::Client.run(token) do |bot|
         obj_person = Person.new()
         text = obj_person.deletePerson(id)
         puts text.to_s
-        kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
+        kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
         bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
       end
 
       #check if at least one goal achieved
     when 'checkAchievedGoals'
       puts 'IdPerson: ' + $id_Person.to_s
-      if $id_Person != 0
-        puts 'Inside checkAchievedGoals method for a specified person with id=' + $id_Person.to_s
-        obj_person = Person.new()
-        text = obj_person.countGoalsAchieved($id_Person)
-        puts text.to_s
-        kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
-        bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new(text, 'image/jpeg'))
-        #bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
-      end  
-      
+      if $id_Person == 0
+        $id_Person = 1
+      end
+
+      puts 'Inside checkAchievedGoals method for a specified person with id=' + $id_Person.to_s
+      obj_person = Person.new()
+      url = obj_person.countGoalsAchieved($id_Person)
+      kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
+
+      #        image = '13408917_1085612471512347_634157408_n.jpg'
+      #        conn = Faraday.new(:url => 'https://scontent.cdninstagram.com/t51.2885-15/e35/') do |faraday|
+      #          faraday.request :multipart
+      #          faraday.request  :url_encoded
+      #          faraday.adapter :net_http
+      #        end
+      #        payload = { :profile_pic => Faraday::UploadIO.new(image, 'image/jpeg') }
+      #
+      #        res = conn.post do |req|
+      #          req.url '/profile'
+      #          req.headers['Content-Type'] = 'image/jpeg'
+      #        end
+      #        bot.api.send_photo(chat_id: message.chat.id, photo: res.body)
+
+      #download image from url
+      dest = '/home/images' + url.split('/').last
+      open(url) do |u|   
+        File.open(dest, 'wb') { |f| f.write(u.read) } 
+      end
+      bot.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new(dest, 'image/jpeg'))
+
     end
   end
 end
