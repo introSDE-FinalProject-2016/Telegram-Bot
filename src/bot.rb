@@ -47,7 +47,7 @@ Telegram::Bot::Client.run(token) do |bot|
        physical activity and
        hydration.
 
-       Send searchPerson to begin
+       Send /searchPerson to begin
        the application. You can create
        a new person or can find your id
        checking the list of people in the
@@ -57,7 +57,7 @@ Telegram::Bot::Client.run(token) do |bot|
        Send /help if you want to see
        the menu.'
 
-      answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(searchPerson peopleList), %w(createNewPerson)], one_time_keyboard: true)
+      answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(/searchperson /peopledetails), %w(/createperson)], one_time_keyboard: true)
       bot.api.send_message(chat_id: message.chat.id, text: question, reply_markup: answers)
 
     when '/stop'
@@ -74,7 +74,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
       #**************************** LOGIN ********************************************
 
-    when 'searchPerson'
+    when '/searchperson'
       ask_id = "Insert your id: p=<id>"
       kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: true)
       bot.api.send_message(chat_id: message.chat.id, text: ask_id, reply_markup: kb)
@@ -100,7 +100,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
         answers_user = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [['/help', '/stop'],
           ['personInfo', 'measureInfo',  'goalInfo'],
-          ['currentMeasureList', 'findMeasureByName'],
+          ['currentMeasureInfo', 'findMeasureByName'],
           ['createNewMeasure', 'checkAchievedGoals'],
           ['createNewGoal', 'deletePerson']], one_time_keyboard: false)
         bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: answers_user)
@@ -108,7 +108,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
       #**************************** PERSON ********************************************
 
-    when 'createNewPerson'
+    when '/createperson'
       ask_id = "Insert your personal information: p -cPerson <firstname> <lastname> <birthdate> <email> <gender>"
       kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
       bot.api.send_message(chat_id: message.chat.id, text: ask_id, reply_markup: kb)
@@ -145,8 +145,8 @@ Telegram::Bot::Client.run(token) do |bot|
       end
 
       #Get list of people
-    when 'peopleList'
-      puts 'Inside peopleList method that show the list of people...'
+    when '/peopledetails'
+      puts 'Inside peopleDetails method that show the list of people...'
       obj_person = Person.new()
       text = obj_person.viewPeopleListDetails
       kb = Telegram::Bot::Types::ReplyKeyboardHide.new(hide_keyboard: false)
@@ -248,13 +248,13 @@ Telegram::Bot::Client.run(token) do |bot|
       bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: kb)
 
       #Get list of current measure
-    when 'currentMeasureList'
+    when 'currentMeasureInfo'
       puts 'IdPerson: ' + $id_Person.to_s
       if $id_Person == 0
         $id_Person = 1
       end
 
-      puts 'Inside currentMeasureList method for a specified person with id=' + $id_Person.to_s
+      puts 'Inside currentMeasureInfo method for a specified person with id=' + $id_Person.to_s
       obj_person = Person.new()
       text = obj_person.showListCurrentHealth($id_Person)
       puts text.to_s
