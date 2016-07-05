@@ -12,17 +12,16 @@ class Person
     help= '
           You can control me by sending these commands:
 
-          searchPerson - search a person by id
-          createPerson - create new person
-          peopleListDetails - view the list of people into DB
-          personDetails - view person details
+          /searchperson - search a person by its id
+          /createperson - create new person
+          /peopledetails - view details of all people in DB
+          personInfo - view details of a given person
           measureInfo - view list of measures
           goalInfo - view list of goals
-          currentMeasureList - view list of current measure
-          checkMeasureList - view list measure for a given measureName
+          currentMeasureInfo - view list of current measure
+          findMeasureByName - view list of measures by measureName
           createNewMeasure - create new measure and check if goal achieved
-          p -comparisonValue - comparison value of current measure and goal
-          createNewMeasure - create new measure
+          checkAchievedGoals - check if person has some achieved goal
           createNewGoal - create new goal
           deletePerson - delete a person'
     help
