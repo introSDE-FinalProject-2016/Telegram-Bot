@@ -351,7 +351,8 @@ Telegram::Bot::Client.run(token) do |bot|
       #        bot.api.send_photo(chat_id: message.chat.id, photo: res.body)
 
       #download image from url
-      dest = '/home/images' + url.split('/').last
+      puts Dir.pwd
+      dest = Dir.pwd + '/images/' + url.split('/').last
       open(url) do |u|   
         File.open(dest, 'wb') { |f| f.write(u.read) } 
       end
