@@ -225,15 +225,35 @@ class Person
     response = RestClient.get addr
     puts response
 
-    result = JSON.parse(response)
-    puts result
-    measure = result['measure']
-    text = "Measure: " + measureName.to_s + "\n"
-    measure.each do |el|
-      text << "\n Id: " + el['mid'].to_s + "\n Value: " + el['value'].to_s + "\n Created: " + el['created'].to_s + "\n"
+    if response.code == 200
+      puts response
+      result = JSON.parse(response)
+      x=result['measure']
+      if !x.empty?
+        text = text = "Measure: " + measureName.to_s + "\n"
+        x.each do |el|
+          text << "\n Id: " + el['mid'].to_s + "\n Value: " + el['value'].to_s + "\n Created: " + el['created'].to_s + "\n"
+        end
+      else
+        text = "There are not measures for " + measureName.to_s
+      end
+    else
+      text = "Error"
     end
     return text
   end
+
+    
+    
+  #    result = JSON.parse(response)
+  #    puts result
+  #    measure = result['measure']
+  #    text = "Measure: " + measureName.to_s + "\n"
+  #    measure.each do |el|
+  #      text << "\n Id: " + el['mid'].to_s + "\n Value: " + el['value'].to_s + "\n Created: " + el['created'].to_s + "\n"
+  #    end
+  #    return text
+  #  end
 
   
   #Delete person method
